@@ -1,6 +1,3 @@
-Sure! Here's a more polished and professional version of your description for your **README** file:
-
----
 
 ## Intelligent Document Management System (GED) with Data Science Integration
 
@@ -13,7 +10,7 @@ please find below the drive link to the demo video
 - **Backend**: The backend is structured with **FastAPI** to serve the document management and classification models. The system utilizes state-of-the-art document classification models, specifically the **Microsoft LayoutLMv3 (base)** and **Curiousily LayoutLMv3 (financial document classification)**, to classify incoming document images into categories.
   
 - **Frontend**: The frontend is built using **React.js**, providing a user-friendly interface to interact with the system. The code for the frontend resides in the `main` branch, while the backend and models are in the `master` branch.
-
+ 
 ### Features
 
 - **Document Classification**: The system processes incoming document images and classifies them into predefined categories such as:
@@ -51,7 +48,8 @@ For efficient semantic search, all documents are embedded using the **Paraphrase
 
 ### LIVE DEMO VIDEO
 https://drive.google.com/file/d/15x9tG2wMy4c1KGbfKiAoGVxdylYs6dG8/view
-
+### NOTE
+to get the code we encountred an issue during the upload , so our models and backend is in the master branch of this repo , the front part is on the main branch
 
 ### Conclusion
 
@@ -59,4 +57,3 @@ This intelligent document management system provides an efficient and intuitive 
 
 ---
 
-This version should be much more readable, clear, and professional for your README file! Let me know if you'd like to add or adjust anything.
