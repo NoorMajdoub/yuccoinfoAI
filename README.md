@@ -48,7 +48,7 @@ For efficient semantic search, all documents are embedded using the **Paraphrase
 
 ### LIVE DEMO VIDEO
 https://drive.google.com/file/d/15x9tG2wMy4c1KGbfKiAoGVxdylYs6dG8/view
-### NOTE
+###  !! NOTE  !!
 to get the code we encountred an issue during the upload , so our models and backend is in the master branch of this repo , the front part is on the main branch
 
 ### Conclusion
