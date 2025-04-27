@@ -31,8 +31,26 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 
+interface SearchResult {
+  id: number;
+  filename: string;
+  content_type: string;
+  type: string;
+  snippet: string;
+}
+
+interface Document {
+  id: string;
+  name: string;
+  type: string;
+  category: string;
+  size: string;
+  uploadedAt: string;
+  starred: boolean;
+}
+
 // Mock data for documents
-const mockDocuments = [
+const mockDocuments: Document[] = [
   {
     id: "doc-1",
     name: "Financial Report Q1 2023",
@@ -78,62 +96,43 @@ const mockDocuments = [
     uploadedAt: "2023-04-18T11:10:00",
     starred: false,
   },
-  {
-    id: "doc-6",
-    name: "Team Photo - Company Retreat",
-    type: "jpg",
-    category: "Photos",
-    size: "4.5 MB",
-    uploadedAt: "2023-03-15T13:25:00",
-    starred: false,
-  },
-  {
-    id: "doc-7",
-    name: "Invoice #12345",
-    type: "pdf",
-    category: "Invoices",
-    size: "0.8 MB",
-    uploadedAt: "2023-04-20T10:05:00",
-    starred: false,
-  },
-  {
-    id: "doc-8",
-    name: "Balance Sheet 2023",
-    type: "xlsx",
-    category: "Balance Sheets",
-    size: "1.2 MB",
-    uploadedAt: "2023-04-22T09:15:00",
-    starred: false,
-  },
-  {
-    id: "doc-9",
-    name: "Income Statement Q1 2023",
-    type: "xlsx",
-    category: "Income Statements",
-    size: "0.9 MB",
-    uploadedAt: "2023-04-21T14:30:00",
-    starred: true,
-  },
 ]
 
 export default function DocumentsPage() {
   const [searchQuery, setSearchQuery] = useState("")
+  const [submittedQuery, setSubmittedQuery] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("all")
   const [typeFilter, setTypeFilter] = useState("all")
   const [searchType, setSearchType] = useState("keyword")
+  const [results, setResults] = useState<SearchResult[]>([])
+  const [adr, setadr] = useState("")
 
-  // Get unique categories and types for filters
-  const categories = ["all", ...new Set(mockDocuments.map((doc) => doc.category))]
-  const types = ["all", ...new Set(mockDocuments.map((doc) => doc.type))]
-
-  // Filter documents based on search query and filters
-  const filteredDocuments = mockDocuments.filter((doc) => {
-    const matchesSearch = doc.name.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesCategory = categoryFilter === "all" || doc.category === categoryFilter
-    const matchesType = typeFilter === "all" || doc.type === typeFilter
-
-    return matchesSearch && matchesCategory && matchesType
-  })
+  const handleSendMessage = async () => {
+    setSubmittedQuery(searchQuery)
+    // alert(searchType)
+    if (!searchQuery.trim()) {
+      setResults([])
+      return
+    }
+    let url = "";
+    if (searchType === "semantic") {
+      url = `http://localhost:8000/search2/?keyword=${encodeURIComponent(searchQuery)}`;
+    } else if (searchType === "keyword") {
+      url = `http://localhost:8000/search/?keyword=${encodeURIComponent(searchQuery)}`;
+    }
+  
+    try {
+      const response = await fetch(url)
+      if (!response.ok) {
+        throw new Error("Error fetching search results")
+      }
+      const data = await response.json()
+      setResults(data)
+      console.log(data)
+    } catch (err) {
+      console.error("Error fetching search results:", err)
+    } 
+  }
 
   // Format date for display
   const formatDate = (dateString: string) => {
@@ -163,6 +162,34 @@ export default function DocumentsPage() {
         return <File className="h-4 w-4" />
     }
   }
+
+  // Filter mock documents based on filters (when no search query)
+  const filteredMockDocuments = mockDocuments.filter((doc) => {
+    const matchesCategory = categoryFilter === "all" || doc.category === categoryFilter
+    const matchesType = typeFilter === "all" || doc.type === typeFilter
+    return matchesCategory && matchesType
+  })
+
+  // Filter results based on filters (when there is a search query)
+  const filteredResults = results.filter((result) => {
+    const matchesCategory = categoryFilter === "all" || result.type === categoryFilter
+    const matchesType = typeFilter === "all" || result.content_type.split('/')[1] === typeFilter
+    return matchesCategory && matchesType
+  })
+
+  // Get unique categories and types for filters
+  const categories = ["all", ...new Set([
+    ...mockDocuments.map((doc) => doc.category),
+    ...results.map((result) => result.type)
+  ])]
+  
+  const types = ["all", ...new Set([
+    ...mockDocuments.map((doc) => doc.type),
+    ...results.map((result) => result.content_type.split('/')[1])
+  ])]
+
+  const showingResults = submittedQuery.trim() !== ""
+  const hasContent = showingResults ? filteredResults.length > 0 : filteredMockDocuments.length > 0
 
   return (
     <div className="space-y-6">
@@ -232,15 +259,21 @@ export default function DocumentsPage() {
           </div>
 
           <TabsContent value="keyword" className="mt-0">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search by document name, content, or metadata..."
-                className="pl-8"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+            <div className="flex gap-2">
+              <div className="relative flex-grow">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search by document name, content, or metadata..."
+                  className="pl-8"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                />
+              </div>
+              <Button onClick={handleSendMessage}>
+                Search
+              </Button>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
               Keyword search finds exact matches in document names, content, and metadata.
@@ -248,15 +281,21 @@ export default function DocumentsPage() {
           </TabsContent>
 
           <TabsContent value="semantic" className="mt-0">
-            <div className="relative">
-              <Sparkles className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Describe what you're looking for in natural language..."
-                className="pl-8"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+            <div className="flex gap-2">
+              <div className="relative flex-grow">
+                <Sparkles className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Describe what you're looking for in natural language..."
+                  className="pl-8"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                />
+              </div>
+              <Button onClick={handleSendMessage}>
+                Search
+              </Button>
             </div>
             <div className="flex items-center space-x-2 mt-2">
               <Switch id="include-context" />
@@ -276,75 +315,67 @@ export default function DocumentsPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[40px]"></TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Size</TableHead>
-              <TableHead>Uploaded</TableHead>
-              <TableHead className="w-[80px]"></TableHead>
+              {showingResults ? (
+                <>
+                  <TableHead>File</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Content</TableHead>
+                </>
+              ) : (
+                <>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Size</TableHead>
+                  <TableHead>Uploaded</TableHead>
+                  <TableHead>Starred</TableHead>
+                </>
+              )}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredDocuments.length > 0 ? (
-              filteredDocuments.map((doc) => (
-                <TableRow key={doc.id}>
-                  <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      aria-label={doc.starred ? "Unstar document" : "Star document"}
-                    >
-                      <Star
-                        className={`h-4 w-4 ${doc.starred ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}`}
-                      />
-                    </Button>
+            {!hasContent ? (
+              <TableRow>
+                <TableCell colSpan={showingResults ? 4 : 6} className="text-center py-6 text-muted-foreground">
+                  {showingResults ? 
+                    "No search results found. Try adjusting your filters or search query." : 
+                    "No documents found matching your filters."}
+                </TableCell>
+              </TableRow>
+            ) : showingResults ? (
+              filteredResults.map((result) => (
+                <TableRow key={result.id}>
+                  <TableCell className="flex items-center gap-2">
+                    {getFileIcon(result.content_type.split('/')[1])}
+                    {result.filename}
                   </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      {getFileIcon(doc.type)}
-                      <span className="font-medium">{doc.name}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{doc.category}</Badge>
-                  </TableCell>
-                  <TableCell className="uppercase">{doc.type}</TableCell>
-                  <TableCell>{doc.size}</TableCell>
-                  <TableCell>{formatDate(doc.uploadedAt)}</TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Open menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
-                          <Download className="mr-2 h-4 w-4" />
-                          <span>Download</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Share className="mr-2 h-4 w-4" />
-                          <span>Share</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive">
-                          <Trash className="mr-2 h-4 w-4" />
-                          <span>Delete</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
+                  <TableCell>{result.content_type.split('/')[1].toUpperCase()}</TableCell>
+                  <TableCell>{result.type}</TableCell>
+                  <TableCell className="max-w-xs truncate">{result.snippet}</TableCell>
                 </TableRow>
               ))
             ) : (
-              <TableRow>
-                <TableCell colSpan={7} className="text-center py-6 text-muted-foreground">
-                  No documents found. Try adjusting your filters or search query.
-                </TableCell>
-              </TableRow>
+              filteredMockDocuments.map((doc) => (
+                <TableRow key={doc.id}>
+                  <TableCell className="flex items-center gap-2">
+                    {getFileIcon(doc.type)}
+                    {doc.name}
+                    {doc.starred && <Star className="h-4 w-4 text-yellow-400" />}
+                  </TableCell>
+                  <TableCell>{doc.type.toUpperCase()}</TableCell>
+                  <TableCell>{doc.category}</TableCell>
+                  <TableCell>{doc.size}</TableCell>
+                  <TableCell>{formatDate(doc.uploadedAt)}</TableCell>
+                  <TableCell>
+                    {doc.starred ? (
+                      <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+                    ) : (
+                      <Star className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))
             )}
           </TableBody>
         </Table>
