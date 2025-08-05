@@ -85,7 +85,6 @@ async def upload_file(file: UploadFile = File(...), db: Session = Depends(get_db
     # Create a unique filename to avoid collisions
     file_location = os.path.join(UPLOAD_DIRECTORY, file.filename)
 
-    # Save the uploaded file
     with open(file_location, "wb") as file_object:
         shutil.copyfileobj(file.file, file_object)
 
@@ -199,5 +198,6 @@ def get_document(document_id: int, db: Session = Depends(get_db)):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
 
 
