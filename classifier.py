@@ -4,7 +4,7 @@ import time
 from transformers import LayoutLMv3ForSequenceClassification, LayoutLMv3Processor
 from PIL import Image, ImageDraw, ImageFont
 import torch
-import fitz  # PyMuPDF
+import fitz  
 import docx2txt
 import io
 import pytesseract
@@ -107,5 +107,6 @@ if __name__ == "__main__":
     print(classify_pdf(file))
     end = time.time()
     print(end-start)
+
 
 
