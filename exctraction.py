@@ -1,6 +1,6 @@
 
 import docx
-import fitz  # PyMuPDF for PDF handling
+import fitz  
 import pytesseract
 from PIL import Image
 import io
@@ -46,3 +46,4 @@ def extract_text_from_excel(file_path):
         return df.to_string(index=False)  # Convert the Excel table into readable text
     except Exception as e:
         raise Exception(f"Failed to extract text from Excel: {str(e)}")
+
