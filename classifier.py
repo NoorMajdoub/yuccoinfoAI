@@ -9,7 +9,6 @@ import docx2txt
 import io
 import pytesseract
 
-# If you are on Windows, set the path to tesseract.exe
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 # Load processor and model once
@@ -107,6 +106,7 @@ if __name__ == "__main__":
     print(classify_pdf(file))
     end = time.time()
     print(end-start)
+
 
 
 
