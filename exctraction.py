@@ -11,7 +11,6 @@ def extract_text_from_docx(file_path):
     return "\n".join([paragraph.text for paragraph in doc.paragraphs])
 
 
-# Function to extract text from PDF files using PyMuPDF and OCR
 def extract_text_from_pdf(file_path):
     doc = fitz.open(file_path)
     text = ""
@@ -46,4 +45,5 @@ def extract_text_from_excel(file_path):
         return df.to_string(index=False)  # Convert the Excel table into readable text
     except Exception as e:
         raise Exception(f"Failed to extract text from Excel: {str(e)}")
+
 
