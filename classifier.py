@@ -14,7 +14,6 @@ pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tessera
 processor = LayoutLMv3Processor.from_pretrained("microsoft/layoutlmv3-base")
 model = LayoutLMv3ForSequenceClassification.from_pretrained("curiousily/layoutlmv3-financial-document-classification")
 
-# Move model to device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
 
@@ -105,6 +104,7 @@ if __name__ == "__main__":
     print(classify_pdf(file))
     end = time.time()
     print(end-start)
+
 
 
 
