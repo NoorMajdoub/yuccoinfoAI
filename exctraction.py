@@ -38,9 +38,10 @@ def extract_text_from_image(file_path):
 def extract_text_from_excel(file_path):
     try:
         df = pd.read_excel(file_path)
-        return df.to_string(index=False)  # Convert the Excel table into readable text
+        return df.to_string(index=False)  
     except Exception as e:
         raise Exception(f"Failed to extract text from Excel: {str(e)}")
+
 
 
 
