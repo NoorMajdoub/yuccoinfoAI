@@ -2,8 +2,6 @@ import chromadb
 from sentence_transformers import SentenceTransformer
 
 
-
-
 model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
 chroma_client = chromadb.Client()
 collection = chroma_client.create_collection(name="documents")
@@ -32,4 +30,5 @@ def sem_search(query: str, n_results: int = 1) -> list[str]:
         query_embeddings=[query_embedding],
         n_results=n_results
     )
+
     return results['documents'][0] 
