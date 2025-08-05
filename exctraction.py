@@ -30,7 +30,6 @@ def extract_text_from_pdf(file_path):
     return text
 
 
-# Function to extract text from images using OCR
 def extract_text_from_image(file_path):
     img = Image.open(file_path)
     return pytesseract.image_to_string(img)
@@ -41,6 +40,7 @@ def extract_text_from_excel(file_path):
         return df.to_string(index=False)  
     except Exception as e:
         raise Exception(f"Failed to extract text from Excel: {str(e)}")
+
 
 
 
