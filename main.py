@@ -15,7 +15,6 @@ from exctraction import *
 from classifier import classify_image, classify_pdf, classify_docx
 import pytesseract
 from fastapi.middleware.cors import CORSMiddleware
-# Add CORS middleware
 
 
 # If you are on Windows, set the path to tesseract.exe
@@ -201,3 +200,4 @@ def get_document(document_id: int, db: Session = Depends(get_db)):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
