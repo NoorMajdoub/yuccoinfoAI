@@ -20,7 +20,6 @@ def extract_text_from_pdf(file_path):
         page = doc[page_num]
         page_text = page.get_text()
 
-        # If page has text content, use it directly
         if page_text.strip():
             text += f"{page_text}\n"
         # Otherwise, use OCR on the rendered page image
@@ -45,6 +44,7 @@ def extract_text_from_excel(file_path):
         return df.to_string(index=False)  # Convert the Excel table into readable text
     except Exception as e:
         raise Exception(f"Failed to extract text from Excel: {str(e)}")
+
 
 
 
