@@ -11,7 +11,6 @@ import pytesseract
 
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
-# Load processor and model once
 processor = LayoutLMv3Processor.from_pretrained("microsoft/layoutlmv3-base")
 model = LayoutLMv3ForSequenceClassification.from_pretrained("curiousily/layoutlmv3-financial-document-classification")
 
@@ -106,6 +105,7 @@ if __name__ == "__main__":
     print(classify_pdf(file))
     end = time.time()
     print(end-start)
+
 
 
 
