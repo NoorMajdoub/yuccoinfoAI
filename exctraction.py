@@ -20,7 +20,6 @@ def extract_text_from_pdf(file_path):
 
         if page_text.strip():
             text += f"{page_text}\n"
-        # Otherwise, use OCR on the rendered page image
         else:
             pix = page.get_pixmap(matrix=fitz.Matrix(2.0, 2.0)) 
             img_bytes = pix.tobytes("png")
@@ -42,6 +41,7 @@ def extract_text_from_excel(file_path):
         return df.to_string(index=False)  # Convert the Excel table into readable text
     except Exception as e:
         raise Exception(f"Failed to extract text from Excel: {str(e)}")
+
 
 
 
