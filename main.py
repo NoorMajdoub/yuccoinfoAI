@@ -17,7 +17,6 @@ import pytesseract
 from fastapi.middleware.cors import CORSMiddleware
 
 
-# If you are on Windows, set the path to tesseract.exe
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 app = FastAPI(title="Document Search API")
@@ -200,4 +199,5 @@ def get_document(document_id: int, db: Session = Depends(get_db)):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
 
