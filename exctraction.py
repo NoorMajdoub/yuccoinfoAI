@@ -5,7 +5,6 @@ import pytesseract
 from PIL import Image
 import io
 import pandas as pd
-# Function to extract text from DOCX files
 def extract_text_from_docx(file_path):
     doc = docx.Document(file_path)
     return "\n".join([paragraph.text for paragraph in doc.paragraphs])
@@ -43,6 +42,7 @@ def extract_text_from_excel(file_path):
         return df.to_string(index=False)  # Convert the Excel table into readable text
     except Exception as e:
         raise Exception(f"Failed to extract text from Excel: {str(e)}")
+
 
 
 
